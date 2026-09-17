@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Breaking Kelas 1 SD - Tebak Kata</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --accent-color: #ffe66d;
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #2d3436;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #ee5253;
+            margin: 0 0 5px 0;
+            font-size: 28px;
+        }
+
+        p.subtitle {
+            color: #57606f;
+            margin: 0;
+            font-size: 16px;
+        }
+
+        /* Container utama game */
+        .game-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            border: 4px solid var(--secondary-color);
+        }
+
+        .badge-soal {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: #2d3436;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        /* Petunjuk Clue */
+        .clue-box {
+            background-color: #eccc6822;
+            border: 2px dashed #ffa502;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #2f3542;
+            font-weight: bold;
+        }
+
+        /* Display Kata yang Tebentuk */
+        .word-display-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .prefix-box {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 0 #ee5253;
+        }
+
+        .answer-slot {
+            background-color: #f1f2f6;
+            border: 3px dashed #a4b0be;
+            min-width: 120px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #2ed573;
+            letter-spacing: 2px;
+            padding: 0 10px;
+        }
+
+        /* Kolom Pilihan Huruf */
+        .pool-title {
+            font-size: 14px;
+            color: #747d8c;
+            margin-bottom: 10px;
+        }
+
+        .letters-pool {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .letter-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            width: 50px;
+            height: 55px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #3db1ab;
+            transition: transform 0.1s, background-color 0.1s;
+        }
+
+        .letter-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #3db1ab;
+        }
+
+        .letter-btn:disabled {
+            background-color: #dcdde1;
+            box-shadow: 0 4px 0 #c8d6e5;
+            cursor: not-allowed;
+            color: #a4b0be;
+        }
+
+        /* Kontrol Game */
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #ff3838; color: white; }
+        .btn-next { background-color: #2ed573; color: white; display: none; }
+
+        /* Umpan Balik / Feedback */
+        #feedback {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .correct { color: #2ed573; }
+        .wrong { color: #ff3838; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎉 Game Tebak Kata Singkat!</h1>
+        <p class="subtitle">Ice Breaking Kelas 1 SD</p>
+    </header>
+
+    <div class="game-card">
+        <div id="soal-badge" class="badge-soal">Soal 1 dari 5</div>
+        
+        <!-- Petunjuk / Clue -->
+        <div id="clue-box" class="clue-box">
+            "..."
+        </div>
+
+        <!-- Display Gabungan Suku Kata & Jawaban -->
+        <div class="word-display-container">
+            <div id="prefix-display" class="prefix-box">GA-</div>
+            <div id="answer-slot" class="answer-slot"></div>
+        </div>
+
+        <!-- Kolom Pilihan Huruf -->
+        <div class="pool-title">Klik huruf di bawah untuk melengkapi kata:</div>
+        <div id="letters-pool" class="letters-pool"></div>
+
+        <div id="feedback"></div>
+
+        <!-- Tombol Aksi -->
+        <div class="controls">
+            <button class="btn-action btn-reset" onclick="resetCurrentWord()">🔄 Hapus</button>
+            <button id="btn-next" class="btn-action btn-next" onclick="nextWord()">➡️ Lanjut Soal Berikutnya</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Game berdasarkan Blueprint
+        const questions = [
+            {
+                prefix: "GA-",
+                clue: "🐘 Binatang besar yang punya belalai panjang.",
+                targetSuffix: "JAH",
+                pool: ["J", "A", "H", "B", "R"]
+            },
+            {
+                prefix: "BO-",
+                clue: "⚽ Benda bulat yang sering ditendang di lapangan.",
+                targetSuffix: "LA",
+                pool: ["L", "A", "T", "K", "M"]
+            },
+            {
+                prefix: "BU-",
+                clue: "📚 Benda di dalam tas sekolah yang dibuka untuk dibaca.",
+                targetSuffix: "KU",
+                pool: ["K", "U", "P", "T", "S"]
+            },
+            {
+                prefix: "ME-",
+                clue: "🪑 Tempat kita meletakkan buku dan pensil di kelas.",
+                targetSuffix: "JA",
+                pool: ["J", "A", "N", "D", "R"]
+            },
+            {
+                prefix: "RO-",
+                clue: "🍞 Makanan empuk yang biasa diolesi selai untuk sarapan.",
+                targetSuffix: "TI",
+                pool: ["T", "I", "S", "M", "K"]
+            }
+        ];
+
+        let currentIndex = 0;
+        let selectedLetters = [];
+
+        function loadQuestion() {
+            const q = questions[currentIndex];
+            
+            // Update UI dasar
+            document.getElementById('soal-badge').innerText = `Soal ${currentIndex + 1} dari ${questions.length}`;
+            document.getElementById('clue-box').innerText = q.clue;
+            document.getElementById('prefix-display').innerText = q.prefix;
+            document.getElementById('answer-slot').innerText = "";
+            document.getElementById('feedback').innerText = "";
+            document.getElementById('btn-next').style.display = "none";
+            
+            selectedLetters = [];
+
+            // Render Kolom Pilihan Huruf
+            const poolContainer = document.getElementById('letters-pool');
+            poolContainer.innerHTML = "";
+
+            q.pool.forEach((letter, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'letter-btn';
+                btn.innerText = letter;
+                btn.id = `btn-letter-${index}`;
+                btn.onclick = () => selectLetter(letter, index);
+                poolContainer.appendChild(btn);
+            });
+        }
+
+        function selectLetter(letter, btnIndex) {
+            const q = questions[currentIndex];
+            
+            // Batasi pengisian sesuai panjang kata yang dibutuhkan
+            if (selectedLetters.length < q.targetSuffix.length) {
+                selectedLetters.push(letter);
+                
+                // Nonaktifkan tombol yang diklik
+                document.getElementById(`btn-letter-${btnIndex}`).disabled = true;
+
+                // Update tampilan jawaban
+                const currentText = selectedLetters.join('');
+                document.getElementById('answer-slot').innerText = currentText;
+
+                // Cek jika jumlah huruf sudah mencukupi
+                if (currentText.length === q.targetSuffix.length) {
+                    checkAnswer(currentText);
+                }
+            }
+        }
+
+        function checkAnswer(userSuffix) {
+            const q = questions[currentIndex];
+            const feedbackEl = document.getElementById('feedback');
+
+            if (userSuffix === q.targetSuffix) {
+                const fullWord = (q.prefix + q.targetSuffix).replace('-', '');
+                feedbackEl.className = "correct";
+                feedbackEl.innerText = `🎉 HEBAT! Jawabannya adalah ${fullWord}!`;
+                document.getElementById('btn-next').style.display = "inline-block";
+            } else {
+                feedbackEl.className = "wrong";
+                feedbackEl.innerText = "❌ Kurang tepat. Coba lagi yuk!";
+            }
+        }
+
+        function resetCurrentWord() {
+            loadQuestion();
+        }
+
+        function nextWord() {
+            currentIndex++;
+            if (currentIndex < questions.length) {
+                loadQuestion();
+            } else {
+                // Game Selesai
+                document.getElementById('soal-badge').innerText = "SELESAI!";
+                document.getElementById('clue-box').innerText = "🏆 Luar biasa! Semua tebakan berhasil dijawab!";
+                document.getElementById('prefix-display').innerText = "👏";
+                document.getElementById('answer-slot').innerText = "HORE";
+                document.getElementById('letters-pool').innerHTML = "";
+                document.getElementById('feedback').className = "correct";
+                document.getElementById('feedback').innerText = "Ice breaking selesai! Mari lanjut ke materi berikutnya.";
+                document.getElementById('btn-next').style.display = "none";
+            }
+        }
+
+        // Mulai game saat halaman dimuat
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
